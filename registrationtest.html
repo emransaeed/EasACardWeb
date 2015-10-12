@@ -50,8 +50,15 @@
         var urlGetCustomer = 'http://localhost:51664/Customer/GetCustomer?userId={id}';
         var urlRegisterIndividual = 'http://localhost:51664/Customer/RegisterIndividual';
         var urlRegisterCompany = 'http://localhost:51664/Customer/RegisterCompany';
-        var urlLoginIndividual = 'http://localhost:51664/Customer/LoginIndividual?username={username}&password={password}';
+        var urlLoginIndividual = 'http://localhost:51664/Customer/LoginIndividual';
         var urlLoginCompany = 'http://localhost:51664/Customer/LoginCompany?username={username}&password={password}';
+
+        //var urlGetAllCustomers = 'http://emransaeed-001-site1.smarterasp.net/Customer/GetAllCustomers';
+        //var urlGetCustomer = 'http://emransaeed-001-site1.smarterasp.net/Customer/GetCustomer?userId={id}';
+        //var urlRegisterIndividual = 'http://emransaeed-001-site1.smarterasp.net/Customer/RegisterIndividual';
+        //var urlRegisterCompany = 'http://emransaeed-001-site1.smarterasp.net/Customer/RegisterCompany';
+        //var urlLoginIndividual = 'http://emransaeed-001-site1.smarterasp.net/Customer/LoginIndividual?username={username}&password={password}';
+        //var urlLoginCompany = 'http://emransaeed-001-site1.smarterasp.net/Customer/LoginCompany?username={username}&password={password}';
 
         $(document).ready(getAllCustomers);
 
@@ -156,43 +163,59 @@
         }
 
         function loginIndividual() {
+            jQuery.support.cors = true;
             var username = $('#username').val();
             var password = $('#password').val();
+            var userprofile = {
+                UserName: username,
+                Password: password,
+                VerificationCode: ''
+            };
 
             $.ajax({
-                url: urlLoginIndividual.replace('{username}', username).replace('{password}', password),
-                dataType: 'jsonp',
+                url: urlLoginIndividual,
+                data: userprofile,
+                type: 'POST',
+                dataType: 'json',
                 success: function (data) {
-                    if (data != null) {
-                        $('#account').text(data.UserID + ' ' + data.ExpiryDate);
+                    if (data.Status == "Ok") {
+                        $('#account').text(data.CardsLimit + ' ' + data.ExpiryDate);
                     }
                     else {
                         $('#account').text('Account does not exist.');
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    $('#account').text('Error:' + thrownError + ' ' + ajaxOptions + ' ' + xhr.status + ' ' + xhr.readyState);
+                    $('#register').text('thrownError: ' + thrownError + ' ajaxOptions:' + ajaxOptions + ' status:' + xhr.status + ' readyState:' + xhr.readyState);
                 }
             });
         }
 
         function loginCompany() {
+            jQuery.support.cors = true;
             var username = $('#username1').val();
             var password = $('#password1').val();
+            var userprofile = {
+                UserName: username,
+                Password: password,
+                VerificationCode: ''
+            };
 
             $.ajax({
-                url: urlLoginCompany.replace('{username}', username).replace('{password}', password),
-                dataType: 'jsonp',
+                url: urlLoginCompany,
+                data: userprofile,
+                type: 'POST',
+                dataType: 'json',
                 success: function (data) {
-                    if (data != null) {
-                        $('#account1').text(data.CompanyID + ' ' + data.ExpiryDate);
+                    if (data.Status == "Ok") {
+                        $('#account').text(data.CardsLimit + ' ' + data.ExpiryDate);
                     }
                     else {
-                        $('#account1').text('Account does not exist.');
+                        $('#account').text('Account does not exist.');
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    $('#account1').text('Error:' + thrownError + ' ' + ajaxOptions + ' ' + xhr.status + ' ' + xhr.readyState);
+                    $('#register').text('thrownError: ' + thrownError + ' ajaxOptions:' + ajaxOptions + ' status:' + xhr.status + ' readyState:' + xhr.readyState);
                 }
             });
         }
