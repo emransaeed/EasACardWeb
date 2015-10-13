@@ -25,7 +25,19 @@
     <div>
         <h2>Register Company</h2>
         <input type="button" value="Register" onclick="registerCompany();" />
-        <p id="register" />
+        <p id="registerc" />
+    </div>
+
+    <div>
+        <h2>Verify Individual</h2>
+        <input type="button" value="Verify" onclick="verifyIndividual();" />
+        <p id="verify" />
+    </div>
+
+    <div>
+        <h2>Verify Company</h2>
+        <input type="button" value="Verify" onclick="verifyCompany();" />
+        <p id="verifyc" />
     </div>
 
     <div>
@@ -41,7 +53,7 @@
         <input type="text" id="username1" size="50" /><br />
         <input type="text" id="password1" size="50" />
         <input type="button" value="Login" onclick="loginCompany();" />
-        <p id="account1" />
+        <p id="accountc" />
     </div>
 
     <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
@@ -50,6 +62,8 @@
         var urlGetCustomer = 'http://localhost:51664/Customer/GetCustomer?userId={id}';
         var urlRegisterIndividual = 'http://localhost:51664/Customer/RegisterIndividual';
         var urlRegisterCompany = 'http://localhost:51664/Customer/RegisterCompany';
+        var urlVerifyIndividual = 'http://localhost:51664/Customer/VerifyIndividual';
+        var urlVerifyCompany = 'http://localhost:51664/Customer/VerifyCompany';
         var urlLoginIndividual = 'http://localhost:51664/Customer/LoginIndividual';
         var urlLoginCompany = 'http://localhost:51664/Customer/LoginCompany?username={username}&password={password}';
 
@@ -57,13 +71,15 @@
         //var urlGetCustomer = 'http://emransaeed-001-site1.smarterasp.net/Customer/GetCustomer?userId={id}';
         //var urlRegisterIndividual = 'http://emransaeed-001-site1.smarterasp.net/Customer/RegisterIndividual';
         //var urlRegisterCompany = 'http://emransaeed-001-site1.smarterasp.net/Customer/RegisterCompany';
+        //var urlVerifyIndividual = 'http://emransaeed-001-site1.smarterasp.net/Customer/VerifyIndividual';
+        //var urlVerifyCompany = 'http://emransaeed-001-site1.smarterasp.net/Customer/VerifyCompany';
         //var urlLoginIndividual = 'http://emransaeed-001-site1.smarterasp.net/Customer/LoginIndividual?username={username}&password={password}';
         //var urlLoginCompany = 'http://emransaeed-001-site1.smarterasp.net/Customer/LoginCompany?username={username}&password={password}';
 
         $(document).ready(getAllCustomers);
 
         function formatItem(item) {
-            return item.Name + ': ' + item.UserID;
+            return item.UserName + ': ' + item.Name + ': ' + item.UserID;
         }
 
         function getAllCustomers() {
@@ -107,14 +123,14 @@
         function registerIndividual() {
             jQuery.support.cors = true;
             var customer = {
-                UserID: '1',
-                UserName: 'u1',
-                Email: 'test@test.com',
+                UserID: '3',
+                UserName: 'u3',
+                Email: 'test3@test.com',
                 Password: 'psw',
                 Country: 'PK',
                 Phone: '01234',
                 Name: 'abc',
-                VerificationCode:'v'
+                VerificationCode: 'psw'
             };
 
             $.ajax({
@@ -123,7 +139,12 @@
                 type: 'POST',
                 dataType: 'json',
                 success: function () {
-                    $('#register').text("Registered");
+                    if (data.Status == "Ok") {
+                        $('#register').text("Registered");
+                    }
+                    else {
+                        $('#register').text('Error in registering.');
+                    }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     $('#register').text('thrownError: ' + thrownError + ' ajaxOptions:' + ajaxOptions + ' status:' + xhr.status + ' readyState:' + xhr.readyState);
@@ -134,18 +155,18 @@
         function registerCompany() {
             jQuery.support.cors = true;
             var customer = {
-                CompanyID:'1',
-                UserName: 'u1',
-                Email: 'test@test.com',
+                CompanyID:'2',
+                UserName: 'cu2',
+                Email: 'testc2@test.com',
                 Password: 'psw',
                 Country: 'PK',
                 Phone: '01234',
-                Name: 'c1',
-                ContactPerson: 'cp1',
+                Name: 'c2',
+                ContactPerson: 'cp2',
                 Mobile: '01234',
                 Address: 'add',
                 City: 'Sydney',
-                VerificationCode: 'v'
+                VerificationCode: 'psw'
             };
 
             $.ajax({
@@ -154,10 +175,69 @@
                 type: 'POST',
                 dataType: 'json',
                 success: function () {
-                    $('#register').text("Registered");
+                    if (data.Status == "Ok") {
+                        $('#registerc').text("Registered");
+                    }
+                    else {
+                        $('#registerc').text('Error in registering.');
+                    }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    $('#register').text('thrownError: ' + thrownError + ' ajaxOptions:' + ajaxOptions + ' status:' + xhr.status + ' readyState:' + xhr.readyState);
+                    $('#registerc').text('thrownError: ' + thrownError + ' ajaxOptions:' + ajaxOptions + ' status:' + xhr.status + ' readyState:' + xhr.readyState);
+                }
+            });
+        }
+
+        function verifyIndividual() {
+            jQuery.support.cors = true;
+            var customer = {
+                UserName: 'u3',
+                VerificationCode: 'psw',
+                Password: ''
+            };
+
+            $.ajax({
+                url: urlVerifyIndividual,
+                data: customer,
+                type: 'POST',
+                dataType: 'json',
+                success: function () {
+                    if (data.Status == "Ok") {
+                        $('#verify').text("Verified, " + data.CardsLimit + ", " + data.ExpiryDate + ", " + data.UserName);
+                    }
+                    else {
+                        $('#verify').text('Error in verification.');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $('#verify').text('thrownError: ' + thrownError + ' ajaxOptions:' + ajaxOptions + ' status:' + xhr.status + ' readyState:' + xhr.readyState);
+                }
+            });
+        }
+
+        function verifyCompany() {
+            jQuery.support.cors = true;
+            var customer = {
+                UserName: 'cu2',
+                VerificationCode: 'psw',
+                Password: ''
+            };
+
+            $.ajax({
+                url: urlVerifyCompany,
+                data: customer,
+                type: 'POST',
+                dataType: 'json',
+                success: function () {
+                    if (data.Status == "Ok") {
+                        $('#verifyc').text("Verified, " + data.CardsLimit + ", " + data.ExpiryDate + ", " + data.UserName);
+                    }
+                    else {
+                        $('#verifyc').text('Error in verification.');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $('#verifyc').text('thrownError: ' + thrownError + ' ajaxOptions:' + ajaxOptions + ' status:' + xhr.status + ' readyState:' + xhr.readyState);
                 }
             });
         }
@@ -186,7 +266,7 @@
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    $('#register').text('thrownError: ' + thrownError + ' ajaxOptions:' + ajaxOptions + ' status:' + xhr.status + ' readyState:' + xhr.readyState);
+                    $('#account').text('thrownError: ' + thrownError + ' ajaxOptions:' + ajaxOptions + ' status:' + xhr.status + ' readyState:' + xhr.readyState);
                 }
             });
         }
@@ -208,14 +288,14 @@
                 dataType: 'json',
                 success: function (data) {
                     if (data.Status == "Ok") {
-                        $('#account').text(data.CardsLimit + ' ' + data.ExpiryDate);
+                        $('#accountc').text(data.CardsLimit + ' ' + data.ExpiryDate);
                     }
                     else {
-                        $('#account').text('Account does not exist.');
+                        $('#accountc').text('Account does not exist.');
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    $('#register').text('thrownError: ' + thrownError + ' ajaxOptions:' + ajaxOptions + ' status:' + xhr.status + ' readyState:' + xhr.readyState);
+                    $('#accountc').text('thrownError: ' + thrownError + ' ajaxOptions:' + ajaxOptions + ' status:' + xhr.status + ' readyState:' + xhr.readyState);
                 }
             });
         }
