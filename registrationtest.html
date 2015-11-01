@@ -9,9 +9,15 @@
         <h2>All Customers</h2>
         <ul id="Customers" />
     </div>
+
     <div>
-        <h2>Search by ID</h2>
-        <input type="text" id="userId" size="5" />
+        <h2>All Company Customers</h2>
+        <ul id="CompanyCustomers" />
+    </div>
+
+    <div>
+        <h2>Search by User Name</h2>
+        <input type="text" id="userName" size="5" />
         <input type="button" value="Search" onclick="getCustomer();" />
         <p id="customer" />
     </div>
@@ -59,7 +65,8 @@
     <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
     <script>
         var urlGetAllCustomers = 'http://localhost:51664/Customer/GetAllCustomers';
-        var urlGetCustomer = 'http://localhost:51664/Customer/GetCustomer?userId={id}';
+        var urlGetAllCompanyCustomers = 'http://localhost:51664/Customer/GetAllCompanyCustomers';
+        var urlGetCustomer = 'http://localhost:51664/Customer/GetCustomer?userName={userName}';
         var urlRegisterIndividual = 'http://localhost:51664/Customer/RegisterIndividual';
         var urlRegisterCompany = 'http://localhost:51664/Customer/RegisterCompany';
         var urlVerifyIndividual = 'http://localhost:51664/Customer/VerifyIndividual';
@@ -68,7 +75,8 @@
         var urlLoginCompany = 'http://localhost:51664/Customer/LoginCompany';
 
         //var urlGetAllCustomers = 'http://emransaeed-001-site1.smarterasp.net/Customer/GetAllCustomers';
-        //var urlGetCustomer = 'http://emransaeed-001-site1.smarterasp.net/Customer/GetCustomer?userId={id}';
+        //var urlGetAllCompanyCustomers = 'http://emransaeed-001-site1.smarterasp.net/Customer/GetAllCompanyCustomers';
+        //var urlGetCustomer = 'http://emransaeed-001-site1.smarterasp.net/Customer/GetCustomer?userName={userName}';
         //var urlRegisterIndividual = 'http://emransaeed-001-site1.smarterasp.net/Customer/RegisterIndividual';
         //var urlRegisterCompany = 'http://emransaeed-001-site1.smarterasp.net/Customer/RegisterCompany';
         //var urlVerifyIndividual = 'http://emransaeed-001-site1.smarterasp.net/Customer/VerifyIndividual';
@@ -79,7 +87,7 @@
         $(document).ready(getAllCustomers);
 
         function formatItem(item) {
-            return item.UserName + ': ' + item.Name + ': ' + item.UserID;
+            return item.UserName + ': ' + item.Name + ': ' + item.Email;
         }
 
         function getAllCustomers() {
@@ -96,13 +104,30 @@
                     $('#customer').text('Error:' + thrownError + ' ' + ajaxOptions + ' ' + xhr.status + ' ' + xhr.readyState);
                 }
             });
+            getAllCompanyCustomers();
+        }
+
+        function getAllCompanyCustomers() {
+            $.ajax({
+                url: urlGetAllCompanyCustomers,
+                dataType: 'jsonp',
+                success: function (data) {
+                    $.each(data, function (key, item) {
+                        $('<li>', { text: formatItem(item) }).appendTo($('#CompanyCustomers'));
+                    }
+                    );
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $('#customer').text('Error:' + thrownError + ' ' + ajaxOptions + ' ' + xhr.status + ' ' + xhr.readyState);
+                }
+            });
         }
 
         function getCustomer() {
-            var id = $('#userId').val();
+            var userName = $('#userName').val();
 
             $.ajax({
-                url: urlGetCustomer.replace('{id}', id),
+                url: urlGetCustomer.replace('{userName}', userName),
                 dataType: 'jsonp',
                 success: function (data) {
                     if (data != null)
@@ -123,14 +148,13 @@
         function registerIndividual() {
             jQuery.support.cors = true;
             var customer = {
-                UserID: '3',
                 UserName: 'u3',
                 Email: 'test3@test.com',
                 Password: 'psw',
                 Country: 'PK',
                 Phone: '01234',
                 Name: 'abc',
-                VerificationCode: 'psw'
+                //VerificationCode: 'psw'
             };
 
             $.ajax({
@@ -138,8 +162,8 @@
                 data: customer,
                 type: 'POST',
                 dataType: 'json',
-                success: function () {
-                    if (data.Status == "Ok") {
+                success: function (res) {
+                    if (res.Status == "Ok") {
                         $('#register').text("Registered");
                     }
                     else {
@@ -155,7 +179,6 @@
         function registerCompany() {
             jQuery.support.cors = true;
             var customer = {
-                CompanyID:'2',
                 UserName: 'cu2',
                 Email: 'testc2@test.com',
                 Password: 'psw',
@@ -166,7 +189,7 @@
                 Mobile: '01234',
                 Address: 'add',
                 City: 'Sydney',
-                VerificationCode: 'psw'
+                //VerificationCode: 'psw'
             };
 
             $.ajax({
@@ -174,8 +197,8 @@
                 data: customer,
                 type: 'POST',
                 dataType: 'json',
-                success: function () {
-                    if (data.Status == "Ok") {
+                success: function (res) {
+                    if (res.Status == "Ok") {
                         $('#registerc').text("Registered");
                     }
                     else {
@@ -193,7 +216,7 @@
             var customer = {
                 UserName: 'u3',
                 VerificationCode: 'psw',
-                Password: ''
+                //Password: ''
             };
 
             $.ajax({
@@ -201,9 +224,9 @@
                 data: customer,
                 type: 'POST',
                 dataType: 'json',
-                success: function () {
-                    if (data.Status == "Ok") {
-                        $('#verify').text("Verified, " + data.CardsLimit + ", " + data.ExpiryDate + ", " + data.UserName);
+                success: function (res) {
+                    if (res.Status == "Ok") {
+                        $('#verify').text("Verified, " + res.CardsLimit + ", " + res.ExpiryDate + ", " + res.UserName);
                     }
                     else {
                         $('#verify').text('Error in verification.');
@@ -220,7 +243,7 @@
             var customer = {
                 UserName: 'cu2',
                 VerificationCode: 'psw',
-                Password: ''
+                //Password: ''
             };
 
             $.ajax({
@@ -228,9 +251,9 @@
                 data: customer,
                 type: 'POST',
                 dataType: 'json',
-                success: function () {
-                    if (data.Status == "Ok") {
-                        $('#verifyc').text("Verified, " + data.CardsLimit + ", " + data.ExpiryDate + ", " + data.UserName);
+                success: function (res) {
+                    if (res.Status == "Ok") {
+                        $('#verifyc').text("Verified, " + res.CardsLimit + ", " + res.ExpiryDate + ", " + res.UserName);
                     }
                     else {
                         $('#verifyc').text('Error in verification.');
@@ -257,9 +280,9 @@
                 data: userprofile,
                 type: 'POST',
                 dataType: 'json',
-                success: function (data) {
-                    if (data.Status == "Ok") {
-                        $('#account').text(data.CardsLimit + ' ' + data.ExpiryDate);
+                success: function (res) {
+                    if (res.Status == "Ok") {
+                        $('#account').text(res.CardsLimit + ' ' + res.ExpiryDate);
                     }
                     else {
                         $('#account').text('Account does not exist.');
@@ -286,9 +309,9 @@
                 data: userprofile,
                 type: 'POST',
                 dataType: 'json',
-                success: function (data) {
-                    if (data.Status == "Ok") {
-                        $('#accountc').text(data.CardsLimit + ' ' + data.ExpiryDate);
+                success: function (res) {
+                    if (res.Status == "Ok") {
+                        $('#accountc').text(res.CardsLimit + ' ' + res.ExpiryDate);
                     }
                     else {
                         $('#accountc').text('Account does not exist.');
